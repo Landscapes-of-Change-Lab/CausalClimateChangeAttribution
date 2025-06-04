@@ -20,8 +20,7 @@
 librarian::shelf(fixest, spdep, sf,units, here)
 
 
-paneldat_itrdb <- read_csv(here("Data", "SevenSpecies_ITRDB_climatewindows.csv")) %>% 
-  filter(ppt<1000) %>% 
+paneldat <- read_csv(here("Data", "paneldata_ITRDB_PIED.csv")) %>% 
   mutate(ppt = ppt/1000, pptSummer = pptSummer/1000, 
          ppt_an = ppt_an/1000, laggedprecip = laggedprecip/1000) ## converting mm to m; more interpretable coefs
 
