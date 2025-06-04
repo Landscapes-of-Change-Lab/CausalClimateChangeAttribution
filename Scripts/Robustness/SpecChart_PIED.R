@@ -39,19 +39,11 @@ select <- dplyr::select
 ## source function required for this analysis
 source(here("Scripts", "Functions", "spec_chart_function.R"))
 
-## itrdb data
-paneldat_itrdb <- read_csv(here("Data", "SevenSpecies_ITRDB_climatewindows.csv")) %>% 
-  filter(ppt<1000) %>% 
+
+paneldat <- read_csv(here("Data", "paneldata_ITRDB_PIED.csv")) %>% 
   mutate(ppt = ppt/1000, pptSummer = pptSummer/1000, 
          ppt_an = ppt_an/1000, laggedprecip = laggedprecip/1000) ## converting mm to m; more interpretable coefs
 
-paneldat <- paneldat_itrdb %>%
-  mutate(tree_id = paste0(collection_id, "_", tree)) %>% 
-  filter(species_id == "pied") %>%
-  select(-tree) %>% ## remove duplicated tree ids 
-  rename(tree = tree_id, plot = collection_id)
-
-length(unique(paneldat$tree))
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

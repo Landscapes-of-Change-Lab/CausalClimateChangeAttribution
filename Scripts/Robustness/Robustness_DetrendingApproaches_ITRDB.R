@@ -36,52 +36,35 @@ theme_set(
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-select <- dplyr::select
+## ITRDB data
+paneldat <- read_csv(here("Data", "paneldata_ITRDB_PIED.csv"))
 
-## importing the panel ITRDB data
-paneldat_itrdb <- read_csv(here("Data", "SevenSpecies_ITRDB_climatewindows.csv"))
-
-paneldat <- paneldat_itrdb %>%
-  mutate(tree_id = paste0(collection_id, "_", tree)) %>% 
-  filter(species_id == "pied") %>%
-  select(-tree) %>% ## remove duplicated tree ids 
-  rename(tree = tree_id, plot = collection_id)
-
-## creating a dataset with tree and plot
-treedat <- paneldat %>% 
-  select(tree, plot) %>% 
+## creating a dataset with unique tree and plot
+treedat <- paneldat %>%
+  select(tree, plot) %>%
   distinct()
 
-## importing climate data for ITRDB sites
-itrdbdat <- read_csv(here("Data", "ITRDB_species_latlon.csv")) %>%
-  filter(species_id == "pied") 
+## all ITRDB site for PIED
+itrdbdat <- read_csv(here("Data", "PIED_ITRDB_latlon.csv"))
 
-## isolating sites for PIED
+## isolating sites of PIED
 pied <- itrdbdat %>% 
   select(species_id, collection_id) %>% 
-  distinct() %>% 
-  rename(plot = collection_id)
+  distinct()
 
 ## prism data
-prism_itrdb <- read_csv(here("Data", "raw_prism_itrdb_sevenDomSp.csv"))
-
-pied_clim <- prism_itrdb %>%
-  select(waypoint_id, variable,value, month, year, longitude, latitude) %>% 
-  rename(plot = waypoint_id) %>%
-  left_join(pied) %>% 
-  filter(!is.na(species_id))
-
+pied_clim <- read_csv(here("Data", "Allclimatedat_PIED_ITRDB.csv"))
 
 climdat <- pied_clim %>% 
   mutate(growing=ifelse(month%in%c(10:12), year+1, year)) %>% 
   filter(!month%in%c(7:9)) %>% ## don't include July, August, September
   filter(growing!=1900) %>% 
   pivot_wider(names_from=variable, values_from=value) %>% 
-  group_by(plot, growing) %>% 
+  group_by(collection_id, growing) %>% 
   summarize(tmax = mean(tmax, na.rm=T), ppt = sum(ppt, na.rm=T))%>%
   rename(year=growing) %>% 
-  ungroup() 
-
+  ungroup() %>% 
+  rename(plot = collection_id)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -273,7 +256,7 @@ pb <- progress_bar$new(
   width = 60
 )
 
-for (i in 1:100){
+for (i in 1:1000){
   
   pb$tick()
   
