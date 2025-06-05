@@ -1,4 +1,4 @@
-## ---------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ##
 ## Script name: Counterfactual estimate
 ##
@@ -9,15 +9,16 @@
 ## Copyright (c) Joan Dudney, 2024
 ## Email: dudney@ucsb.edu
 ##
-## ---------------------------
 ##
 ## Notes:
 ##   This script estimates the counterfactual climate and growth scenarios
 ##    using a MC simulation
-## ---------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-## packages
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Load packages
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 librarian::shelf(sjPlot, ggeffects, patchwork, tidyverse, broom,progress, here,
                  lme4, plotrix, ggpubr, nlme, fixest, plotrix, egg, ggpmisc,
                  mvtnorm, clubSandwich, rasterVis, broom.mixed, scales,RColorBrewer, splines, zoo)
