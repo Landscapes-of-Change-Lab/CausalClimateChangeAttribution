@@ -74,13 +74,7 @@ climdat <- pied_clim %>%
   rename(plot = collection_id)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#
-#                    COUNTERFACTUAL SCENARIOS
-#
-#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# ----- Prep data for multiple climate counterfactuals ----------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Prepare data similar to your example
@@ -106,7 +100,7 @@ climdat_short <- climdat_short %>%
     tmax_pred_anom_quad = NA_real_
   )
 
-#========== TEMPERATURE MODELS ==========
+## Temperature models
 
 # 1. Linear model (as in your example)
 temp_mod_linear <- lm(tmax_anom ~ plus_year + 0, data = climdat_short)
@@ -124,7 +118,7 @@ summary(temp_mod_quad)
 climdat_short$tmax_pred_anom_quad <- predict(temp_mod_quad)
 
 
-#========== CREATE COUNTERFACTUALS ==========
+## Create counterfactuals
 
 # Generate counterfactual climate variables for each model type
 climdat_short <- climdat_short %>%
@@ -132,7 +126,7 @@ climdat_short <- climdat_short %>%
       tmax_cf_spline = tmax - tmax_pred_anom_spline,
       tmax_cf_quad = tmax - tmax_pred_anom_quad)
 
-#========== VISUALIZE RESULTS ==========
+## Visualize results
 
 # Plot temperature anomaly models
 ggplot(climdat_short, aes(x = year)) +
@@ -158,11 +152,7 @@ ggplot(climdat_short, aes(x = year)) +
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#
-#                   ESTIMATING THE DIFFERENT COUNTERFACTUAL GROWTH SCENARIOS
-#
-#
+# --------- Estimate growth response to weather ----------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## estimating the model and extracting coefficient matrix
 fe_mod <-  feols(rwi ~ tmax * ppt | tree + year,
@@ -205,7 +195,7 @@ counter_qu <- climdat_short %>%
   left_join(treedat)
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# MONTE CARLO SIMULATION
+# ------- MONTE CARLO SIMULATION -----------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## create an empty dataframe for results
@@ -259,7 +249,7 @@ head(results)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Figure
+# -------- Create Figure S1 ---------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## new dataframe to create figures from
