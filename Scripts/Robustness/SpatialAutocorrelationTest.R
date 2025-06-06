@@ -17,7 +17,7 @@
 ##
 ## ---------------------------
 
-librarian::shelf(fixest, spdep, sf,units, here)
+librarian::shelf(fixest, spdep, sf,units, here, tidyverse)
 
 
 paneldat <- read_csv(here("Data", "paneldata_ITRDB_PIED.csv")) %>% 
