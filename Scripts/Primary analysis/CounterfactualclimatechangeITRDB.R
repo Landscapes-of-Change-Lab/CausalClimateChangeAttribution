@@ -18,6 +18,20 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# ------- Load packages --------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+librarian::shelf(sjPlot, ggeffects, patchwork, tidyverse, broom,progress, here,
+                 lme4, plotrix, ggpubr, nlme, fixest, plotrix, egg, ggpmisc,
+                 mvtnorm, clubSandwich, rasterVis, broom.mixed, scales,RColorBrewer, splines, zoo)
+
+select <- dplyr::select
+
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# ------- Set simulation and plotting parameters --------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Check if Monte Carlo simulation number is defined, if not define it
 if (!exists("n_mc")) {
   n_mc <- 1000  # Default number of simulations
@@ -27,24 +41,13 @@ if (!exists("n_mc")) {
 }
 
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# ------- Load packages --------
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-librarian::shelf(sjPlot, ggeffects, patchwork, tidyverse, broom,progress, here,
-                 lme4, plotrix, ggpubr, nlme, fixest, plotrix, egg, ggpmisc,
-                 mvtnorm, clubSandwich, rasterVis, broom.mixed, scales,RColorBrewer, splines, zoo)
-
-
 theme_set(
   theme_bw(base_size = 20)+
     theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 )
 
-select <- dplyr::select
-
-
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# ------- Importing and cleaning data -------
+# ------- Import and clean data -------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## ITRDB data
@@ -157,7 +160,7 @@ draw = rmvnorm(n = n_mc, mean = coef_vector, sigma = V_CR1)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# ------- MC simulation to estimate the effect of climate change on tree growth
+# ------- MC simulation to estimate the effect of climate change on tree growth --------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## create an empty dataframe for results
@@ -237,7 +240,7 @@ perchange <- mainresults %>%
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Create Figure 6: Estimated climate change impacts on tree growth
+# ------ Create Figure 6: Estimated climate change impacts on tree growth ------ 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## Figure 6b: Ribbon plot of change in RWI by precip terciles
 
@@ -290,7 +293,6 @@ ribbonplot
 
 
 ## Figure 6c: Mean change by tercile and period
-
 ## data
 precipterc <- pred_results %>% 
   left_join(tercdat) %>% 
@@ -328,7 +330,6 @@ diff_fig
 
 
 ## Figure 6a: Temperature counterfactual illustration
-
 ## fig temp trends
 ## visualize difference between actual and counterfactual scenarios
 allclimdat <- climdat_short %>% 
@@ -367,16 +368,8 @@ ggsave(here("Output", "fig6.png"), plot = full_fig, width = 15, height = 9, dpi 
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# ------  Precip robustness: Data prep allowing for precip changes.  ------ 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#
-#  Robustness check for precip counterfactual
-#
-#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 ## creating counterfactual and actual dataframes
 counterdat <- climdat_short %>%
   select(plot, tmax_cf, ppt_cf, year) %>%
@@ -392,7 +385,7 @@ actualdat <- climdat_short%>%
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# MC Simulation with precipitation
+# ------ Precip robustness: MC Simulation ------ 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## create an empty dataframe for results
@@ -438,10 +431,8 @@ head(results_precip)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Calculations
+# ------ Precip robustness: Calculations and figure ------ 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 meanchange_noprecip <- meanchange %>% 
   mutate(Scenario = "Without precip counterfactual")
   
