@@ -15,6 +15,13 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Set monte carlo parameters
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+n_mc = 1000
+random_seed = 93105
+set.seed(random_seed)
+
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Create directory to store outputs
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 dir.create(here("Output", "Figures"), showWarnings = FALSE)
@@ -30,5 +37,7 @@ source("Scripts/Primary analysis/MarginalEffectsPlot.R")
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 source("Scripts/Robustness/Robustness_counterfactual_ITRDB.R")
 source("Scripts/Robustness/Robustness_DetrendingApproaches_ITRDB.R")
-source("Scripts/Robustness/SpatialAutocorrelationTest.R")
+source("Scripts/Robustness/SpatialAutocorrelationtTest.R")
+# Note: Error: paneldat_itrdb not found
 source("Scripts/Robustness/SpecChart_PIED.R")
+# Note: Quite slow to run

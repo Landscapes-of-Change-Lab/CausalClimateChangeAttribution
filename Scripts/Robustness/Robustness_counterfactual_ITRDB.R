@@ -16,6 +16,15 @@
 ##
 ## ---------------------------
 
+ 
+ 
+ # Check if Monte Carlo simulation number is defined, if not define it
+ if (!exists("n_mc")) {
+   n_mc <- 1000  # Default number of simulations
+   cat("Monte Carlo simulations variable not found. Setting default: n_mc =", n_mc, "\n")
+ } else {
+   cat("Using existing Monte Carlo simulations: n_mc =", n_mc, "\n")
+ }
 
 ## packages
 librarian::shelf(sjPlot, ggeffects, patchwork, tidyverse, broom,progress, here,
@@ -169,7 +178,7 @@ coef_vector = fe_mod$coefficients
 
 
 ## randomly drawing coefficients from distribution
-draw = rmvnorm(n = 1000, mean = coef_vector, sigma = V_CR1)
+draw = rmvnorm(n = n_mc, mean = coef_vector, sigma = V_CR1)
 
 
 ## creating counterfactual and actual dataframes
