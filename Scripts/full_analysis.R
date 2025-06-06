@@ -15,29 +15,33 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Set monte carlo parameters
+# Set monte carlo simulation parameters  ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-n_mc = 1000
+# Set number of monte carlo simulations to run
+n_mc = 1000  # Paper uses 1000, but this can take several hours to run.
+
+# Set random seed for reproducibility
 random_seed = 93105
 set.seed(random_seed)
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Create directory to store outputs
+# Create directory to store outputs  ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 dir.create(here("Output", "Figures"), showWarnings = FALSE)
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Run primary analysis
+# Run primary analysis  ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 source("Scripts/Primary analysis/CounterfactualclimatechangeITRDB.R")
 source("Scripts/Primary analysis/MarginalEffectsPlot.R")
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Run robustness tests
+# Run robustness tests  ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 source("Scripts/Robustness/Robustness_counterfactual_ITRDB.R")
 source("Scripts/Robustness/Robustness_DetrendingApproaches_ITRDB.R")
 source("Scripts/Robustness/SpatialAutocorrelationtTest.R")
-# Note: Error: paneldat_itrdb not found
 source("Scripts/Robustness/SpecChart_PIED.R")
-# Note: Quite slow to run
