@@ -11,7 +11,7 @@
 ##
 ##
 ## Notes: Estimates a fixed effects panel model of PIED growth and
-##   plots the marginal effects of temp and precip 
+##   plots the marginal effects of temp and precip. Produces Figure 5 in Dudney et al, 2025.
 ##
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

@@ -12,7 +12,8 @@
 ##
 ## Notes:
 ##   This script estimates the counterfactual climate and growth scenarios
-##    using a MC simulation
+##    using a MC simulation. It calculates the case study's main results, and 
+##    produces Figure 6 in Dudney et al, 2025.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
