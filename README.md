@@ -6,7 +6,6 @@ To replicate the analysis, readers should complete the following steps:
 - Clone repository: This repository contains all code and data needed for replication.
 - Create an R project: Open RStudio and create a new project in the directory where you cloned the repository.
 - Set up computing environment: Run renv::restore() in the R console to install all required packages and set up the computing environment.
-- Install librarian: The scripts in this repository use librarian to manage package dependencies. Run install("librarian") in an R console within your project.
 - Run the scripts: The "/Scripts/full_analysis.R" script runs each of the analysis scripts in the correct order. 
 Note that the full analysis can take several hours to complete on typical personal computers. Decrease the number of iterations (n_mc) to run more quickly.
 Individual scripts are stored in the "Scripts/"directory.
