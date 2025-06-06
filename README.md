@@ -1,5 +1,6 @@
 # Causal Climate Change Attribution
 Replication data and code for the case study described in Dudney et al., 2025, "A causal inference framework for climate change attribution in ecology"
+DOI: https://doi.org/10.5281/zenodo.15611152
 
 ## Instructions for replication
 To replicate the analysis, readers should complete the following steps:
