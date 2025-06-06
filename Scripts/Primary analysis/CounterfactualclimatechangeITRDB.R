@@ -132,7 +132,7 @@ actualdat <- climdat_short%>%
   select(plot, tmax, ppt, year, tree) %>% 
   filter(year<2014)
 
-# Note: Precipitation counterfactual is explored in Robustness/Robustness_counterfactual_ITRDB.R
+# Note: Precipitation counterfactual is explored at end of script
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

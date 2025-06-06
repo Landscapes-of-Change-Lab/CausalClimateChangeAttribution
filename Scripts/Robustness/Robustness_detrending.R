@@ -11,7 +11,7 @@
 ##
 ##
 ## Notes: This code runs a MC simulation to compare
-##   counterfactual scenarios with and without precipitation
+##   results against alternate detrending approaches
 ##
 ##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
