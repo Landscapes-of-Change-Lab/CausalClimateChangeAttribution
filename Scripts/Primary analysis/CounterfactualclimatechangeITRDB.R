@@ -363,7 +363,7 @@ counter_clim_fig
 full_fig <- counter_clim_fig + (ribbonplot/diff_fig) & plot_annotation(tag_levels = "A")
 
 ## Save figure
-ggsave(here("Output", "fig6.png"), plot = full_fig, width = 15, height = 9, dpi = 300)
+ggsave(here("Output", "fig6_cc_impacts.png"), plot = full_fig, width = 15, height = 9, dpi = 300)
 
 
 
@@ -452,7 +452,9 @@ comb_main_res <- precip_main %>%
 
 
 ## figure
-comb_main_res %>% 
+color_palette <- c("Without precip counterfactual" = "#303077", "With precip counterfactual" = "#8c6e87")
+
+precip_robust_fig = comb_main_res %>% 
   ggplot(aes(x = factor(period), y = rwi_mean, color = Scenario, fill = Scenario, shape = Scenario)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci, width = 0.07), 
@@ -465,5 +467,5 @@ comb_main_res %>%
   scale_fill_manual(values = color_palette) 
 
 
-
-color_palette <- c("Without precip counterfactual" = "#303077", "With precip counterfactual" = "#8c6e87")
+## Save figure
+ggsave(here("Output", "figS2_precip_robustness.png"), plot = precip_robust_fig, width = 10, height = 6, dpi = 300)

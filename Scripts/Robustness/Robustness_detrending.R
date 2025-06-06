@@ -309,7 +309,7 @@ average_data <- pred_results %>%
 
 
 
-average_data %>% 
+detrend_robust_fig <- average_data %>% 
   filter(period != "1981-1991") %>% 
   mutate(model = factor(model, levels = c("linear", "qu", "spline"))) %>% 
   ggplot(aes(x = factor(period), y = mean, color = model, fill = model)) +
@@ -332,6 +332,8 @@ average_data %>%
 
 
 
+## Save figure
+ggsave(here("Output", "figSs_detrend_robustness.png"), plot = detrend_robust_fig, width = 10, height = 6, dpi = 300)
 
 
 
