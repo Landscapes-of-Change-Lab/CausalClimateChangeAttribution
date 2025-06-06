@@ -1,4 +1,4 @@
-## ---------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ##
 ## Script name: Marginal effects of climate variables
 ##
@@ -9,16 +9,15 @@
 ## Copyright (c) Joan Dudney, 2024
 ## Email: dudney@ucsb.edu
 ##
-## ---------------------------
 ##
 ## Notes: Estimates a fixed effects panel model of PIED growth and
 ##   plots the marginal effects of temp and precip 
 ##
-## ---------------------------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Packages and set-up
+# Packages and set-up ----
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 librarian::shelf(sjPlot, lme4, patchwork, tidyverse, ggeffects,
@@ -31,8 +30,9 @@ theme_set(
 
 select <- dplyr::select
 
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Data cleaning
+# Data cleaning ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## ITRDB data
@@ -42,7 +42,7 @@ paneldat <- read_csv(here("Data", "paneldata_ITRDB_PIED.csv")) %>%
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# The panel model 
+# The panel model ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 fe_mod <-  feols(rwi ~ tmax * ppt | tree + year,
@@ -56,7 +56,7 @@ tab_model(fe_mod, digits = 4, show.ci = F, show.se = T)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Margins plot
+# Margins plot -------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Compute temperature marginal effects
@@ -99,7 +99,7 @@ marg_temp + marg_precip +   plot_annotation(tag_levels = "A")
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Adding density distribution panels to both plots
+# Adding density distribution panels to both plots ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 # Create a precipitation density plot
@@ -180,4 +180,7 @@ wrapped_precip_plot <- combined_precip_plot
 final_figure <- wrapped_temp_plot | wrapped_precip_plot
 
 final_figure
+ggsave(here("Output", "fig5_marginal_effects.png"), 
+       final_figure, 
+       width = 12, height = 8, dpi = 300)
 
