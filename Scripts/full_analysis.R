@@ -2,7 +2,7 @@
 ##
 ## Script name: Full analysis
 ##
-## Author: Dr. Joan Dudney
+## Author: Dr. Joan Dudney and Robert Heilmayr
 ##
 ## Date Created: 2025-6-5
 ##
@@ -15,10 +15,10 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Set monte carlo simulation parameters  ------
+# ------ Set monte carlo simulation parameters  ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Set number of monte carlo simulations to run
-n_mc = 1000  # Paper uses 1000, but this can take several hours to run.
+n_mc = 50  # Paper uses 1000, but this can take several hours to run.
 
 # Set random seed for reproducibility
 random_seed = 93105
@@ -28,7 +28,7 @@ set.seed(random_seed)
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # Create directory to store outputs  ------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-dir.create(here("Output", "Figures"), showWarnings = FALSE)
+dir.create(here("Output"), showWarnings = FALSE)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
