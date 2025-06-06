@@ -14,6 +14,7 @@
 ##   This script estimates the counterfactual climate and growth scenarios
 ##    using a MC simulation. It calculates the case study's main results, and 
 ##    produces Figure 6 in Dudney et al, 2025.
+##
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -27,7 +28,7 @@ if (!exists("n_mc")) {
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Load packages
+# ------- Load packages --------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 librarian::shelf(sjPlot, ggeffects, patchwork, tidyverse, broom,progress, here,
                  lme4, plotrix, ggpubr, nlme, fixest, plotrix, egg, ggpmisc,
@@ -43,7 +44,7 @@ select <- dplyr::select
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Importing and cleaning data
+# ------- Importing and cleaning data -------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## ITRDB data
@@ -68,7 +69,7 @@ pied_clim <- read_csv(here("Data", "Allclimatedat_PIED_ITRDB.csv"))
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Create counterfactual climate scenarios -----------
+# ------- Create counterfactual climate scenarios -----------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## clean all climate data
 climdat <- pied_clim %>% 
@@ -135,7 +136,7 @@ actualdat <- climdat_short%>%
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Estimate impact of temperature and precipitation on tree growth -------
+# ------- Estimate impact of temperature and precipitation on tree growth -------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## estimating the model
@@ -156,7 +157,7 @@ draw = rmvnorm(n = n_mc, mean = coef_vector, sigma = V_CR1)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# MC simulation to estimate the effect of climate change on tree growth
+# ------- MC simulation to estimate the effect of climate change on tree growth
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## create an empty dataframe for results
@@ -210,7 +211,7 @@ head(results)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Main results ----------
+# ------- Main results ----------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 mainresults <- results
