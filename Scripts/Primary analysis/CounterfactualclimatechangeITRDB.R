@@ -48,39 +48,28 @@ select <- dplyr::select
 ## ITRDB data
 paneldat <- read_csv(here("Data", "paneldata_ITRDB_PIED.csv"))
 
-## creating a dataset with unique tree and plot for counterfactual analysis
+## identify unique tree by plot combinations for counterfactual analysis
 treedat <- paneldat %>% 
   select(tree, plot) %>% 
   distinct()
 
-## all ITRDB site for PIED
+## load ITRDB site data for PIED
 itrdbdat <- read_csv(here("Data", "PIED_ITRDB_latlon.csv"))
 
-## isolating sites of PIED
+## create list of PIED sites
 pied <- itrdbdat %>% 
   select(species_id, collection_id) %>% 
   distinct()
 
 ## importing site-level prism data for every year for prediction; 
 ## paneldat above has data just for each observation
-
 pied_clim <- read_csv(here("Data", "Allclimatedat_PIED_ITRDB.csv"))
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Create counterfactual climate scenarios -----------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#
-# Counterfactual climate scenarios
-#
-#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-#========== Subsetting and further cleaning data ==========
-
-## all climate data
+## clean all climate data
 climdat <- pied_clim %>% 
   mutate(growing=ifelse(month%in%c(10:12), year+1, year)) %>% 
   filter(!month%in%c(7:9)) %>% ## don't include July, August, September
@@ -92,24 +81,26 @@ climdat <- pied_clim %>%
   ungroup() %>% 
   rename(plot = collection_id)
 
-climdat_short <- climdat %>% 
-  filter(year>1979)
-
+# summarize historic mean climate by plot
 clim_means <- climdat %>%
   filter(year < 1979) %>%
   group_by(plot) %>%
   summarize(hist_mtmax = mean(tmax),
             hist_mppt = mean(ppt))
 
+# create short dataset for counterfactual analysis
+climdat_short <- climdat %>% 
+  filter(year>1979)
+
+# calculate modern climate anomalies
 climdat_short <- climdat_short %>%
   left_join(clim_means, by = "plot") %>%
   mutate(tmax_anom = tmax - hist_mtmax,
          ppt_anom = ppt - hist_mppt,
          plus_year = year - 1980)
 
-#========== Climate models ==========
-
-## temperature model
+## Estimate linear models describing modern temperature and precipitation trends
+# temperature model
 temp_mod <- lm(tmax_anom ~ plus_year + 0, data=climdat_short)
 summary(temp_mod)
 
@@ -125,38 +116,34 @@ climdat_short <- climdat_short %>%
          ppt_cf = ppt - ppt_pred_anom)
 
 
-#========== Counterfactual datasets ==========
-
-## creating counterfactual and actual dataframes
+## Create counterfactual and historic datasets for simulations
+# Dataset with counterfactual, no climate change temperatures
 counterdat <- climdat_short %>%
   select(plot, tmax_cf, ppt, year) %>%
   rename(tmax = tmax_cf) %>%
   left_join(treedat)%>% 
   filter(year<2014)
 
+# Dataset with observed temperatures
 actualdat <- climdat_short%>%
   left_join(treedat) %>% 
   select(plot, tmax, ppt, year, tree) %>% 
   filter(year<2014)
 
-
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#
-# MC simulation to estimate the effect of climate change on tree growth
-#
-#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Note: Precipitation counterfactual is explored in Robustness/Robustness_counterfactual_ITRDB.R
 
 
-## estimating the model and extracting coefficient matrix
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Estimate impact of temperature and precipitation on tree growth -------
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+## estimating the model
 fe_mod <-  feols(rwi ~ tmax * ppt | tree + year,
                  data= paneldat, cluster = ~ plot)
-
 summary(fe_mod)
 
+
+## extract coefficient matrix
 V_CR1 = vcov(fe_mod)
 V_CR1=as.matrix(V_CR1)
 coef_vector = fe_mod$coefficients
@@ -168,7 +155,7 @@ draw = rmvnorm(n = n_mc, mean = coef_vector, sigma = V_CR1)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# MC simulation
+# MC simulation to estimate the effect of climate change on tree growth
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 ## create an empty dataframe for results
@@ -176,22 +163,28 @@ results=data.frame()
 
 pb <- progress_bar$new(
   format = "  Processing [:bar] :percent eta: :eta",
-  total = 1000,
+  total = n_mc,
   clear = FALSE,
   width = 60
 )
 
 
-for (i in 1:1000){
+for (i in 1:n_mc){
   
   pb$tick()
   
+  # Draw model coefficients
   d <- draw[i,]
   modified_fe_mod <-  fe_mod
   modified_fe_mod$coefficients <- d
+  
+  # Predict RWI under historic temperatures
   actualdat$vals_actual <-  predict(modified_fe_mod, newdata = actualdat)
+  
+  # Predict RWI under counterfactual temperatures
   actualdat$vals_counter <-  predict(modified_fe_mod, newdata = counterdat)
   
+  # Calculate the difference in RWI between actual and counterfactual in three periods
   results_dat_1980 <- actualdat %>% 
     filter(year >= 1981 & year <= 1991) %>%  
     mutate(tree_diff = vals_actual - vals_counter) %>% 
@@ -207,6 +200,7 @@ for (i in 1:1000){
     mutate(tree_diff = vals_actual - vals_counter) %>% 
     mutate(iteration = i, period = "2003-2013")
   
+  # Save out results
   results <- rbind(results, results_dat_1980, results_dat_2000, results_dat_2010)
 }
 
@@ -215,13 +209,7 @@ head(results)
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#
-# Main results
-#
-#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+# Main results ----------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 mainresults <- results
@@ -247,29 +235,20 @@ perchange <- mainresults %>%
 
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#
-#
-# The figures
-#
-#
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-#========== Ribbon plot figure  ==========
+# Create Figure 6: Estimated climate change impacts on tree growth
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+## Figure 6b: Ribbon plot of change in RWI by precip terciles
 
 ## new dataframe to create figures from
 pred_results <- results 
 
-## calculate historical mean precip for each plot
-tercdat <- climdat %>% 
-  filter(year < 1979) %>% 
-  group_by(plot) %>% 
-  summarize(meanppt = mean(ppt))
+## pull historical mean precip for each plot
+tercdat <- clim_means %>% 
+  select(plot, hist_mppt) %>% 
+  rename(meanppt = hist_mppt)
 
+## group plots into historical precip terciles
 tercile_boundaries <- quantile(tercdat$meanppt, probs = c(1/3, 2/3))
-
 tercdat <- tercdat %>%
   mutate(precip_terciles = case_when(
     meanppt < tercile_boundaries[1] ~ "0-33.3%",
@@ -277,6 +256,7 @@ tercdat <- tercdat %>%
     TRUE ~ "66.8-100%"
   ))
 
+## Summarize precip changes by tercile
 summarized_data <-  pred_results %>% 
   #filter(year>1990) %>% 
   left_join(tercdat) %>% 
@@ -287,7 +267,7 @@ summarized_data <-  pred_results %>%
             rwi_mean = mean(mean_diff),
             upper_ci = quantile(mean_diff, 0.975))
 
-# Figure
+# Create figure
 ribbonplot = ggplot(summarized_data, aes(x = year, y = tree_diff, color = precip_terciles, fill = precip_terciles)) +
   geom_hline(yintercept = 0, linetype = "dashed") +
   #geom_point(alpha = 0.01) +
@@ -307,7 +287,7 @@ ribbonplot = ggplot(summarized_data, aes(x = year, y = tree_diff, color = precip
 ribbonplot
 
 
-#========== Mean change figure  ==========
+## Figure 6c: Mean change by tercile and period
 
 ## data
 precipterc <- pred_results %>% 
@@ -345,7 +325,7 @@ diff_fig <- precipterc %>%
 diff_fig
 
 
-#========== Temperature counterfactual figure ==========
+## Figure 6a: Temperature counterfactual illustration
 
 ## fig temp trends
 ## visualize difference between actual and counterfactual scenarios
@@ -375,19 +355,12 @@ counter_clim_fig <- allclimdat %>%
 
 counter_clim_fig
 
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# Combining panels
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+## Combine panels
+full_fig <- counter_clim_fig + (ribbonplot/diff_fig) & plot_annotation(tag_levels = "A")
 
-
-theme_set(
-  theme_bw(base_size = 20)+
-    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-)
-
-
-counter_clim_fig + (ribbonplot/diff_fig) & plot_annotation(tag_levels = "A")
+## Save figure
+ggsave(here("Output", "fig6.png"), plot = full_fig, width = 15, height = 9, dpi = 300)
 
 
 
@@ -425,7 +398,7 @@ results_precip=data.frame()
 
 pb <- progress_bar$new(
   format = "  Processing [:bar] :percent eta: :eta",
-  total = 1000,
+  total = n_mc,
   clear = FALSE,
   width = 60
 )
