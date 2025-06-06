@@ -608,6 +608,8 @@ specs <- rbind(specs, new_row)
 # Create spec chart --------------------------------------------------------
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ## Create figure
+png(here("Output", "Fig7_spec_chart.png"))
+
 highlight_n <- 1
 
 ## Define label structure
@@ -708,8 +710,6 @@ text(x = 18, y = -0.007, label = "N",
      font = 2,      # Bold face
      cex = 1)     # Size
 
-#dev.off()
-
-
+dev.off()
 
 
