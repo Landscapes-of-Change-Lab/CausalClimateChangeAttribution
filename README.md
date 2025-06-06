@@ -1,4 +1,4 @@
-# CausalClimateChangeAttribution
+# Causal Climate Change Attribution
 Replication data and code for the case study described in Dudney et al., 2025, "A causal inference framework for climate change attribution in ecology"
 
 ## Instructions for replication
