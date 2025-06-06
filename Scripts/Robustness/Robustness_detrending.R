@@ -333,7 +333,7 @@ detrend_robust_fig <- average_data %>%
 
 
 ## Save figure
-ggsave(here("Output", "figSs_detrend_robustness.png"), plot = detrend_robust_fig, width = 10, height = 6, dpi = 300)
+ggsave(here("Output", "figS3_detrend_robustness.png"), plot = detrend_robust_fig, width = 10, height = 6, dpi = 300)
 
 
 
